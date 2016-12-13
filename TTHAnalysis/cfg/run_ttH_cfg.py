@@ -44,7 +44,7 @@ lepAna.miniIsolationVetoLeptons = None # use 'inclusive' to veto inclusive lepto
 lepAna.doIsolationScan = False
 
 # Lepton Preselection
-lepAna.loose_electron_id = "POG_MVA_ID_Spring15_NonTrig_VLooseIdEmu"
+lepAna.loose_electron_id = "MVA_ID_NonTrig_Spring16_VLooseIdEmu"
 isolation = "miniIso"
 
 jetAna.lepSelCut = lambda lep : False # no cleaning of jets with leptons
@@ -125,7 +125,8 @@ del susyMultilepton_collections['discardedLeptons']
 
 # Spring16 electron MVA - follow instructions on pull request for correct area setup
 leptonTypeSusy.addVariables([
-        NTupleVariable("mvaIdSpring16",   lambda lepton : lepton.mvaRun2("Spring16") if abs(lepton.pdgId()) == 11 else 1, help="EGamma POG MVA ID, Spring16; 1 for muons"),
+        NTupleVariable("mvaIdSpring16HZZ",   lambda lepton : lepton.mvaRun2("Spring16HZZ") if abs(lepton.pdgId()) == 11 else 1, help="EGamma POG MVA ID, Spring16, HZZ; 1 for muons"),
+        NTupleVariable("mvaIdSpring16GP",   lambda lepton : lepton.mvaRun2("Spring16GP") if abs(lepton.pdgId()) == 11 else 1, help="EGamma POG MVA ID, Spring16, GeneralPurpose; 1 for muons"),
         ])
 
 if not removeJecUncertainty:
@@ -252,7 +253,7 @@ if runData and not isTest: # For running on data
 #    json = os.environ['CMSSW_BASE']+'/src/CMGTools/TTHAnalysis/data/json/Cert_271036-276811_13TeV_PromptReco_Collisions16_JSON_NoL1T.txt' # 12.9/fb #276811 ICHEP LastRun
     json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt' # 36.5/fb
 
-    for era in 'BCDEFGH': dataChunks.append((json,filter(dataSamples_23Sep2016PlusPrompt,lambda dset: '2016'+era in dset),'2016'+era,[],False))
+    for era in 'BCDEFGH': dataChunks.append((json,filter(lambda dset: 'Run2016'+era in dset.name,dataSamples_23Sep2016PlusPrompt),'2016'+era,[],False))
 
     DatasetsAndTriggers = []
     selectedComponents = [];
@@ -310,7 +311,7 @@ if runData and not isTest: # For running on data
                 if run_range!=None:
                     label = "_runs_%d_%d" % run_range if run_range[0] != run_range[1] else "run_%d" % (run_range[0],)
                 compname = pd+"_"+short+label
-                for _comp in filter(dsets,lambda dset : re.match('/%s/.*'%pd,dset.name)):
+                for _comp in filter(lambda dset : re.match('%s_.*'%pd,dset.name),dsets):
                     comp = kreator.makeDataComponent(compname, 
                                                      _comp.dataset,
                                                      "CMS", ".*root", 
@@ -322,7 +323,7 @@ if runData and not isTest: # For running on data
                         from CMGTools.Production.promptRecoRunRangeFilter import filterComponent
                         filterComponent(comp, verbose=1)
                     print "Will process %s (%d files)" % (comp.name, len(comp.files))
-                    comp.splitFactor = len(comp.files)/8
+                    comp.splitFactor = len(comp.files)/8 if 'Single' not in comp.name else len(comp.files)/16
                     comp.fineSplitFactor = 1
                     selectedComponents.append( comp )
             if exclusiveDatasets: vetos += triggers
@@ -330,16 +331,6 @@ if runData and not isTest: # For running on data
         susyCoreSequence.remove(jsonAna)
 
 printSummary(selectedComponents)
-
-if True:
-    from CMGTools.Production.promptRecoRunRangeFilter import filterComponent
-    for c in selectedComponents:
-        printnewsummary = False
-        if "PromptReco" in c.name:
-            printnewsummary = True
-            filterComponent(c, 1)
-            c.splitFactor = len(c.files)/6
-    if printnewsummary: printSummary(selectedComponents)
 
 
 if runFRMC: 
