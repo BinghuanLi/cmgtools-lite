@@ -73,7 +73,7 @@ def conept_SSDL_for3l(lep):
 
 def conept_TTH(lep):
     if (abs(lep.pdgId)!=11 and abs(lep.pdgId)!=13): return lep.pt
-    if (abs(lep.pdgId)!=13 or lep.ICHEPmediumMuonId>0) and lep.mvaTTH > 0.75: return lep.pt
+    if (abs(lep.pdgId)!=13 or lep.mediumMuonId>0) and lep.mvaTTH > 0.75: return lep.pt
     else: return 0.85 * lep.pt / lep.jetPtRatiov2
 
 from CMGTools.TTHAnalysis.analyzers.ntupleTypes import jetLepAwareJEC
