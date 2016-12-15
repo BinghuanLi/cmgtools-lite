@@ -30,6 +30,13 @@ class LeptonFakeRateQCDVars:
                 ret["LepGood_awayJet%s_%s"%(self.label,var)][il] = getattr(jet,var) 
         return ret
 
+MODULES = [
+    ('FakeRateVariables', lambda : LeptonFakeRateQCDVars(
+            leptonSel = lambda lep : True,
+            jetSel = lambda jet,lep,dr : jet.pt > (25 if abs(jet.eta) < 2.4 else 30) and dr>0.7,
+            ))
+    ]
+
 if __name__ == '__main__':
     from sys import argv
     file = ROOT.TFile(argv[1])

@@ -26,6 +26,7 @@ lep_jetPtRatiov2: LepGood_jetPtRatiov2[iChosen]: 40,0,1.2; XTitle="Lepton Jet p_
 #lep_mvaTTH: LepGood_mvaTTH[iChosen]: 40,-1,1; XTitle="Lepton mvaTTH", Legend='TR', LegendCutoff=1e-2
 lep_mvaTTH_log: LepGood_mvaTTH[iChosen]: 40,-1,1; Logy, XTitle="lepton MVA score", Legend='TL', LegendCutoff=1e-2
 lep_mvaSUSY_log: LepGood_mvaSUSY[iChosen]: 40,-1,1; Logy, XTitle="Lepton mvaSUSY", Legend='TL', LegendCutoff=1e-2
+lep_jetNDauChargedMVASel : LepGood_jetNDauChargedMVASel[iChosen]: 30,-0.5,29.5; XTitle="Lepton jetNDauChargedMVASel", Legend='TR', LegendCutoff=1e-2
 #lep_SegmentCompatibility: LepGood_segmentCompatibility[iChosen]: 24,0,1; XTitle="Lepton Segment-based compatibility", Legend='TR', LegendCutoff=1e-2
 lep_SegmentCompatibility_log: LepGood_segmentCompatibility[iChosen]: 24,0,1; Logy, XTitle="Lepton Segment-based compatibility", Legend='TR', LegendCutoff=1e-2
 #lep_pixelLayers: LepGood_pixelLayers[iChosen]: 10,0,10; XTitle="Pixel Layers", Legend='TR', LegendCutoff=1e-2

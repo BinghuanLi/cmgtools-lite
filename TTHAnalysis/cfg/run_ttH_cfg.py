@@ -310,8 +310,10 @@ if runData and not isTest: # For running on data
                 label = ""
                 if run_range!=None:
                     label = "_runs_%d_%d" % run_range if run_range[0] != run_range[1] else "run_%d" % (run_range[0],)
-                compname = pd+"_"+short+label
-                for _comp in filter(lambda dset : re.match('%s_.*'%pd,dset.name),dsets):
+                _ds = filter(lambda dset : re.match('%s_.*'%pd,dset.name),dsets)
+                for idx,_comp in enumerate(_ds):
+                    compname = pd+"_"+short+label
+                    if (len(_ds)>0): compname += '_ds%d'%idx
                     comp = kreator.makeDataComponent(compname, 
                                                      _comp.dataset,
                                                      "CMS", ".*root", 
@@ -569,8 +571,8 @@ elif test == 'ttH-sync':
     ttHLepSkim.minLeptons=0
     selectedComponents = selectedComponents[:1]
     comp = selectedComponents[0]
-    comp.files = ['/store/mc/RunIIFall15MiniAODv2/ttHToNonbb_M125_13TeV_powheg_pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/00000/021B993B-4DBB-E511-BBA6-008CFA1111B4.root']
-    tmpfil = os.path.expandvars("/tmp/$USER/021B993B-4DBB-E511-BBA6-008CFA1111B4.root")
+    comp.files = ['/store/mc/RunIISummer16MiniAODv2/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/110000/0015BB42-9BAA-E611-8C7F-0CC47A7E0196.root']
+    tmpfil = os.path.expandvars("/tmp/$USER/0015BB42-9BAA-E611-8C7F-0CC47A7E0196.root")
     if not os.path.exists(tmpfil):
         os.system("xrdcp root://eoscms//eos/cms%s %s" % (comp.files[0],tmpfil))
     comp.files = [ tmpfil ]
