@@ -213,17 +213,26 @@ from CMGTools.HToZZ4L.tools.configTools import printSummary, configureSplittingF
 
 selectedComponents = [TTLep_pow]
 
-selectedComponents = selectedComponents
-#    samples_2l = [ TTWToLNu, TTZToLLNuNu, TTLLJets_m1to10, TTTT_ext, tZq_ll ] + TTHnobb_mWCutfix
-#    samples_2l = [WJetsToLNu_LO, WJetsToLNu, DYJetsToLL_M10to50_LO, DYJetsToLL_M10to50, DYJetsToLL_M50, DYJetsToLL_M50_LO, TTJets, TT_pow, TTJets_SingleLeptonFromTbar, TTJets_SingleLeptonFromT, TTJets_DiLepton, TBar_tWch, T_tWch, TToLeptons_tch_amcatnlo, TToLeptons_sch_amcatnlo, TTGJets, WGToLNuG, ZGTo2LG, TGJets, WWDouble, WpWpJJ, TTTT, VHToNonbb, GGHZZ4L,tZq_ll, WZTo3LNu, ZZTo4L, WWTo2L2Nu, WWW, WWZ, WZZ, ZZZ, TTHnobb_pow, TTW_LO, TTZ_LO, TTWToLNu, TTZToLLNuNu, TTLLJets_m1to10] + TTHnobb_mWCutfix
-#    samples_1l = [QCD_Mu15] + QCD_Mu5 + [WJetsToLNu_LO,DYJetsToLL_M10to50_LO,DYJetsToLL_M50_LO,TT_pow] + QCDPtEMEnriched + QCDPtbcToE
-#    selectedComponents = samples_2l
-#    for comp in selectedComponents: comp.splitFactor = 200
-#    printSummary(selectedComponents)
-#    cropToLumi([TTTT_ext,tZq_ll],200)
-#    cropToLumi(TTHnobb_mWCutfix,2000)
-#    configureSplittingFromTime(samples_1l,50,3)
-#    configureSplittingFromTime(samples_2l,100,3)
+
+sig_ttv = [TTHnobb_pow,TTWToLNu_ext,TTWToLNu_ext2,TTZToLLNuNu_ext,TTZToLLNuNu_m1to10] # signal + TTV
+ttv_lo = [TTW_LO,TTZ_LO] # TTV LO
+rares = [ZZTo4L,GGHZZ4L,VHToNonbb,tZq_ll_ext,WpWpJJ,WWDouble,TTTT,tWll] # rares
+single_t = [TToLeptons_sch_amcatnlo,T_tch_powheg,TBar_tch_powheg,T_tWch_ext,TBar_tWch_ext] # single top + tW
+convs = [WGToLNuG_amcatnlo_ext,ZGTo2LG_ext,TGJets,TTGJets] # X+G
+v_jets = [WJetsToLNu_LO,DYJetsToLL_M10to50_LO,DYJetsToLL_M50_LO_ext,WWTo2L2Nu] # V+jets
+tt_1l = [TTJets_SingleLeptonFromT,TTJets_SingleLeptonFromT_ext,TTJets_SingleLeptonFromTbar,TTJets_SingleLeptonFromTbar_ext] # TT 1l
+tt_2l = [TTJets_DiLepton]#,TTJets_DiLepton_ext] # TT 2l
+boson = [WZTo3LNu]+TriBosons # multi-boson
+
+samples_slow = sig_ttv + ttv_lo + rares + convs + boson + tt_2l
+samples_fast = single_t + v_jets + tt_1l
+
+cropToLumi(rares,500)
+cropToLumi([T_tch_powheg,TBar_tch_powheg],50)
+configureSplittingFromTime(samples_fast,50,6)
+configureSplittingFromTime(samples_slow,100,6)
+
+#selectedComponents = samples_slow+samples_fast
 
 if scaleProdToLumi>0: # select only a subset of a sample, corresponding to a given luminosity (assuming ~30k events per MiniAOD file, which is ok for central production)
     target_lumi = scaleProdToLumi # in inverse picobarns
@@ -305,7 +314,7 @@ if runData and not isTest: # For running on data
                 _ds = filter(lambda dset : re.match('%s_.*'%pd,dset.name),dsets)
                 for idx,_comp in enumerate(_ds):
                     compname = pd+"_"+short+label
-                    if (len(_ds)>0): compname += '_ds%d'%idx
+                    if (len(_ds)>1): compname += '_ds%d'%(idx+1)
                     comp = kreator.makeDataComponent(compname, 
                                                      _comp.dataset,
                                                      "CMS", ".*root", 
@@ -561,7 +570,8 @@ elif test == '80X-Data':
         comp.fineSplitFactor = 4
 elif test == 'ttH-sync':
     ttHLepSkim.minLeptons=0
-    selectedComponents = selectedComponents[:1]
+    jetAna.recalibrateJets = False # JEC from MiniAOD for sync
+    selectedComponents = [TTWToLNu_ext]
     comp = selectedComponents[0]
     comp.files = ['/store/mc/RunIISummer16MiniAODv2/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/110000/0015BB42-9BAA-E611-8C7F-0CC47A7E0196.root']
     tmpfil = os.path.expandvars("/tmp/$USER/0015BB42-9BAA-E611-8C7F-0CC47A7E0196.root")
